@@ -28,33 +28,11 @@ contract GigaLens {
             }
         }
 
-        uint256 _toCopy;
-        address theTarget = check.theTarget;
-        bytes memory theCalldata = check.theCalldata;
-        bytes memory _returnData;
-
-        // Static Call
-        assembly {
-            let success :=
-                staticcall(
-                    gas(), // gas
-                    theTarget, // recipient
-                    add(theCalldata, 0x20), // inloc
-                    mload(theCalldata), // inlen
-                    0, // outloc
-                    0 // outlen
-                )
-            // limit our copy to 256 bytes
-            _toCopy := returndatasize()
-            // Store the length of the copied bytes
-            mstore(_returnData, _toCopy)
-            // copy the bytes from returndata[0:_toCopy]
-            returndatacopy(add(_returnData, 0x20), 0, _toCopy)
-        }
+        (, bytes memory _returnData) = check.theTarget.staticcall(check.theCalldata);
 
         if (throwAtEnd) {
             assembly {
-                revert(add(_returnData, 0x20), _toCopy) // Pass Bytes with 1 word offset, must be because solidity allocates the bytes even if it's not showing it
+                revert(add(_returnData, 0x20), _returnData) // Pass Bytes with 1 word offset, must be because solidity allocates the bytes even if it's not showing it
             }
         }
 
