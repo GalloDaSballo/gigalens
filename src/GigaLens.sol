@@ -28,20 +28,12 @@ contract GigaLens {
             }
         }
 
-        // is this bytes or bytes32? // In the case of a balance it's a bytes32
-        // For some reason this get's capped
-        (, bytes memory res) = check.theTarget.staticcall(check.theCalldata);
-        emit DebugBytes("after call", res);
-        uint256 asNumber = abi.decode(res, (uint256));
-
         uint256 _toCopy;
-
         address theTarget = check.theTarget;
         bytes memory theCalldata = check.theCalldata;
         bytes memory _returnData;
 
-        // NOTE: We revert here
-
+        // Static Call
         assembly {
             let success :=
                 staticcall(
@@ -73,9 +65,6 @@ contract GigaLens {
         op.theTarget.call{value: op.theValue}(op.theCalldata);
     }
 
-    event DebugBytes(string, bytes);
-    event Debug(string, uint256);
-
     function quoteMulticall(Operation[] memory operations, TheCheck memory check, bool isComplex)
         external
         payable
@@ -83,9 +72,7 @@ contract GigaLens {
     {
         try this.multicall(operations, check, true) returns (bytes memory) {}
         catch (bytes memory reason) {
-            emit DebugBytes("caught", reason);
             uint256 asNumber = abi.decode(reason, (uint256));
-            emit Debug("asNumber", asNumber);
             if (isComplex) {
                 assembly {
                     return(add(reason, 0x20), reason) // Only if return value is a bytes array else this is not good
