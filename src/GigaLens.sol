@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 pragma solidity 0.8.19;
 
 /// @notice Turn any contract into a "view" like contract meant to be used offChain to perform a sequence of operations and get a return value
