@@ -36,21 +36,22 @@ contract GigaLens {
 
         uint256 _toCopy;
 
-        address theTarget  = check.theTarget;
+        address theTarget = check.theTarget;
         bytes memory theCalldata = check.theCalldata;
         bytes memory _returnData;
-        
+
         // NOTE: We revert here
-        
+
         assembly {
-            let success := staticcall(
-                gas(), // gas
-                theTarget, // recipient
-                add(theCalldata, 0x20), // inloc
-                mload(theCalldata), // inlen
-                0, // outloc
-                0 // outlen
-            )
+            let success :=
+                staticcall(
+                    gas(), // gas
+                    theTarget, // recipient
+                    add(theCalldata, 0x20), // inloc
+                    mload(theCalldata), // inlen
+                    0, // outloc
+                    0 // outlen
+                )
             // limit our copy to 256 bytes
             _toCopy := returndatasize()
             // Store the length of the copied bytes
@@ -59,7 +60,7 @@ contract GigaLens {
             returndatacopy(add(_returnData, 0x20), 0, _toCopy)
         }
 
-        if(throwAtEnd){
+        if (throwAtEnd) {
             assembly {
                 revert(add(_returnData, 0x20), _toCopy) // Pass Bytes with 1 word offset, must be because solidity allocates the bytes even if it's not showing it
             }
@@ -85,7 +86,7 @@ contract GigaLens {
             emit DebugBytes("caught", reason);
             uint256 asNumber = abi.decode(reason, (uint256));
             emit Debug("asNumber", asNumber);
-            if(isComplex) {
+            if (isComplex) {
                 assembly {
                     return(add(reason, 0x20), reason) // Only if return value is a bytes array else this is not good
                 }

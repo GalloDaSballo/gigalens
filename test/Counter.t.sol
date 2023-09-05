@@ -28,15 +28,13 @@ contract GigaLensTest is Test {
         lens = new GigaLens();
         single = new TestReturnSingleWord();
         complex = new TestReturnBytes();
-
     }
 
     event DebugBytesTest(bytes);
 
     function testCanGetBalance() public {
         bytes memory data = abi.encodeWithSignature("doIt()");
-        GigaLens.TheCheck memory uintBalanceCheck =
-            GigaLens.TheCheck({theTarget: address(single), theCalldata: data});
+        GigaLens.TheCheck memory uintBalanceCheck = GigaLens.TheCheck({theTarget: address(single), theCalldata: data});
 
         GigaLens.Operation[] memory operations = new GigaLens.Operation[](0);
 
@@ -51,15 +49,13 @@ contract GigaLensTest is Test {
         console2.log("secondNumber", secondNumber);
 
         // == COMPLEX == //
-        GigaLens.TheCheck memory bytesBalanceCheck =
-            GigaLens.TheCheck({theTarget: address(complex), theCalldata: data});
+        GigaLens.TheCheck memory bytesBalanceCheck = GigaLens.TheCheck({theTarget: address(complex), theCalldata: data});
 
         bytes memory fromDirect = complex.doIt();
         emit DebugBytesTest(fromDirect);
         console2.log("about to decode");
         (uint256[] memory asNumber3) = abi.decode(fromDirect, (uint256[]));
         console2.log("asNumber3", asNumber3[0]);
-
 
         bytes memory resVal2 = lens.quoteMulticall(operations, bytesBalanceCheck, true);
         emit DebugBytesTest(resVal2);
