@@ -42,7 +42,7 @@ contract GigaLensTest is Test {
 
         // == BASE ==//
 
-        bytes memory resVal = lens.quoteMulticall(operations, uintBalanceCheck);
+        bytes memory resVal = lens.quoteMulticall(operations, uintBalanceCheck, false);
         emit DebugBytesTest(resVal);
         uint256 asNumber = abi.decode(resVal, (uint256));
         console2.log("asNumber", asNumber);
@@ -61,7 +61,7 @@ contract GigaLensTest is Test {
         console2.log("asNumber3", asNumber3[0]);
 
 
-        bytes memory resVal2 = lens.quoteMulticall(operations, bytesBalanceCheck);
+        bytes memory resVal2 = lens.quoteMulticall(operations, bytesBalanceCheck, true);
         emit DebugBytesTest(resVal2);
         (uint256[] memory asNumber2) = abi.decode(resVal2, (uint256[]));
         console2.log("asNumber2", asNumber2[0]);

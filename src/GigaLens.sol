@@ -58,10 +58,10 @@ contract GigaLens {
             // copy the bytes from returndata[0:_toCopy]
             returndatacopy(add(_returnData, 0x20), 0, _toCopy)
         }
-        
+
         if(throwAtEnd){
             assembly {
-                revert(add(_returnData, 0x20), _returnData) // Pass Bytes with 1 word offset, must be because solidity allocates the bytes even if it's not showing it
+                revert(add(_returnData, 0x20), _toCopy) // Pass Bytes with 1 word offset, must be because solidity allocates the bytes even if it's not showing it
             }
         }
 
@@ -75,7 +75,7 @@ contract GigaLens {
     event DebugBytes(string, bytes);
     event Debug(string, uint256);
 
-    function quoteMulticall(Operation[] memory operations, TheCheck memory check)
+    function quoteMulticall(Operation[] memory operations, TheCheck memory check, bool isComplex)
         external
         payable
         returns (bytes memory)
@@ -85,8 +85,10 @@ contract GigaLens {
             emit DebugBytes("caught", reason);
             uint256 asNumber = abi.decode(reason, (uint256));
             emit Debug("asNumber", asNumber);
-            assembly {
-                // return(add(reason, 0x20), reason) // Only if return value is a bytes array else this is not good
+            if(isComplex) {
+                assembly {
+                    return(add(reason, 0x20), reason) // Only if return value is a bytes array else this is not good
+                }
             }
             return reason;
         }
